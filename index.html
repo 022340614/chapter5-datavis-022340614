@@ -3,830 +3,485 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>第五章数据可视化平台 - 022340614</title>
-    <meta name="author" content="022340614">
-    <meta name="description" content="基于第五章精确数据的子图绘制与布局管理 - 安全稳定版本">
-    
-    <!-- 安全头 -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.plot.ly 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:;">
-    <meta http-equiv="X-Content-Type-Options" content="nosniff">
-    <meta http-equiv="X-Frame-Options" content="DENY">
-    <meta http-equiv="Strict-Transport-Security" content="max-age=31536000">
-    
-    <!-- 预加载优化 -->
-    <link rel="preload" href="https://cdn.plot.ly/plotly-2.16.1.min.js" as="script" crossorigin="anonymous">
-    <link rel="preconnect" href="https://cdn.plot.ly">
-    
+    <title>第五章 - 子图数据可视化平台</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <style>
-        :root {
-            --primary: #4f46e5;
-            --secondary: #06b6d4;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --error: #ef4444;
-            --text: #111827;
-            --bg: #ffffff;
-            --border: #e5e7eb;
-        }
-
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
         }
-
-        html {
-            font-size: 16px;
-            scroll-behavior: smooth;
-        }
-
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: var(--text);
-            line-height: 1.6;
             min-height: 100vh;
-            overflow-x: hidden;
+            padding: 20px;
         }
-
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 0 1rem;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
         }
-
-        /* 头部导航 */
         .header {
-            background: rgba(255,255,255,0.95);
-            backdrop-filter: blur(20px);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            padding: 1rem 0;
-            border-bottom: 1px solid var(--border);
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-
-        .logo {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--primary);
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .logo::after {
-            content: "022340614";
-            color: #6b7280;
-            font-size: 0.875em;
-            font-weight: 400;
-        }
-
-        .nav {
-            display: flex;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-            margin-top: 1rem;
-        }
-
-        .nav-btn {
-            padding: 0.75rem 1.25rem;
-            background: transparent;
-            color: #6b7280;
-            text-decoration: none;
-            border-radius: 0.5rem;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            min-height: 48px;
-            min-width: 48px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            border: 1px solid transparent;
-        }
-
-        .nav-btn.active, .nav-btn:hover {
-            background: var(--primary);
+            background: linear-gradient(45deg, #2c3e50, #34495e);
             color: white;
-            transform: translateY(-1px);
-        }
-
-        /* 主要内容 */
-        .main {
-            padding: 2rem 0;
-        }
-
-        .hero {
+            padding: 30px;
             text-align: center;
-            color: white;
-            margin-bottom: 3rem;
-            padding: 3rem 0;
         }
-
-        .hero h1 {
-            font-size: clamp(2rem, 5vw, 3.5rem);
-            margin-bottom: 1rem;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
-            font-weight: 700;
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
-
-        .hero p {
-            font-size: 1.2rem;
+        .header p {
+            font-size: 1.2em;
             opacity: 0.9;
-            max-width: 600px;
-            margin: 0 auto;
         }
-
-        /* 章节区域 */
-        .section {
-            background: rgba(255,255,255,0.95);
-            border-radius: 1rem;
-            padding: 2.5rem;
-            margin-bottom: 2rem;
-            backdrop-filter: blur(20px);
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-            border: 1px solid rgba(255,255,255,0.2);
-        }
-
-        .section-title {
-            font-size: 1.75rem;
-            color: var(--text);
-            margin-bottom: 1.5rem;
-            border-bottom: 3px solid var(--primary);
-            padding-bottom: 0.5rem;
+        .nav {
+            background: #ecf0f1;
+            padding: 15px;
             display: flex;
-            align-items: center;
-            gap: 0.5rem;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
         }
-
-        .section-title::before {
-            content: "📊";
-            font-size: 1.5em;
-        }
-
-        .chart-container {
-            width: 100%;
-            height: 400px;
-            background: white;
-            border-radius: 0.75rem;
-            overflow: hidden;
-            margin: 1.5rem 0;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            border: 1px solid var(--border);
-        }
-
-        .data-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 1.5rem 0;
-            background: white;
-            border-radius: 0.75rem;
-            overflow: hidden;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-
-        .data-table th, .data-table td {
-            padding: 1rem;
-            text-align: center;
-            border: 1px solid var(--border);
-        }
-
-        .data-table th {
-            background: var(--primary);
-            color: white;
-            font-weight: 600;
-        }
-
-        .data-table tr:nth-child(even) {
-            background: #f8fafc;
-        }
-
-        /* 按钮样式 */
-        .btn {
-            padding: 0.875rem 1.75rem;
-            background: var(--primary);
+        .nav-btn {
+            background: #3498db;
             color: white;
             border: none;
-            border-radius: 0.5rem;
+            padding: 12px 24px;
+            border-radius: 25px;
             cursor: pointer;
-            font-weight: 500;
-            min-height: 48px;
-            min-width: 48px;
+            font-size: 1em;
             transition: all 0.3s ease;
-            margin: 0.5rem;
-            font-size: 1rem;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
         }
-
-        .btn:hover {
-            background: #3730a3;
+        .nav-btn:hover {
+            background: #2980b9;
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+            box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
         }
-
-        .btn:active {
-            transform: translateY(0);
+        .nav-btn.active {
+            background: #e74c3c;
+            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
         }
-
-        .btn-secondary {
-            background: var(--secondary);
+        .content {
+            padding: 30px;
+            min-height: 600px;
         }
-
-        .btn-secondary:hover {
-            background: #0e7490;
+        .chart-container {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
-
-        /* 页脚 */
-        .footer {
-            background: rgba(255,255,255,0.95);
-            border-top: 1px solid var(--border);
-            padding: 2rem 0;
+        .chart-title {
+            font-size: 1.5em;
+            color: #2c3e50;
+            margin-bottom: 15px;
             text-align: center;
-            color: #6b7280;
-            margin-top: 3rem;
+            font-weight: bold;
         }
-
-        .footer p {
-            margin: 0.5rem 0;
+        .chart-description {
+            color: #7f8c8d;
+            text-align: center;
+            margin-bottom: 20px;
+            line-height: 1.6;
         }
-
-        /* 响应式设计 */
+        .chart {
+            height: 400px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .subplot-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .subplot-item {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .footer {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            margin-top: 30px;
+        }
         @media (max-width: 768px) {
-            .chart-container {
-                height: 300px;
+            .subplot-grid {
+                grid-template-columns: 1fr;
             }
-            
             .nav {
                 flex-direction: column;
+                align-items: center;
             }
-            
             .nav-btn {
-                width: 100%;
-                text-align: center;
+                width: 200px;
             }
-            
-            .section {
-                padding: 1.5rem;
-                margin: 0 -1rem 1.5rem;
-                border-radius: 0;
-            }
-            
-            .hero {
-                padding: 2rem 0;
-            }
-            
-            .data-table {
-                font-size: 0.875rem;
-            }
-            
-            .data-table th, .data-table td {
-                padding: 0.75rem 0.5rem;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .chart-container {
-                height: 250px;
-            }
-            
-            .btn {
-                width: 100%;
-                margin: 0.25rem 0;
-            }
-        }
-
-        /* 加载动画 */
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255,255,255,.3);
-            border-radius: 50%;
-            border-top-color: #fff;
-            animation: spin 1s ease-in-out infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        /* 错误状态 */
-        .error {
-            background: var(--error);
-            color: white;
-            padding: 1rem;
-            border-radius: 0.5rem;
-            margin: 1rem 0;
-        }
-
-        .success {
-            background: var(--success);
-            color: white;
-            padding: 1rem;
-            border-radius: 0.5rem;
-            margin: 1rem 0;
         }
     </style>
 </head>
 <body>
-    <header class="header">
-        <div class="container">
-            <a href="#" class="logo">
-                <span>📊</span>
-                <span>第五章数据可视化</span>
-            </a>
-            <nav class="nav">
-                <a href="#section5-1" class="nav-btn active">5.1 固定区域子图</a>
-                <a href="#section5-2" class="nav-btn">5.2 自定义区域子图</a>
-                <a href="#section5-3" class="nav-btn">5.3 共享坐标轴</a>
-                <a href="#section5-4" class="nav-btn">5.4 子图布局</a>
-            </nav>
+    <div class="container">
+        <div class="header">
+            <h1>第五章 - 子图数据可视化平台</h1>
+            <p>多子图布局、坐标轴共享与自定义区域可视化</p>
         </div>
-    </header>
-
-    <main class="main">
-        <div class="container">
-            <section class="hero">
-                <h1>第五章数据可视化平台</h1>
-                <p>基于第五章精确教学数据的子图绘制与布局管理</p>
-                <p><strong>学号：022340614 | 仓库：022340614/022340614 | 安全稳定版本</strong></p>
-                <div class="success" id="status-message">
-                    ✅ 平台已安全部署 - HTTPS加密传输
-                </div>
-            </section>
-
-            <!-- 5.1 绘制固定区域的子图 -->
-            <section id="section5-1" class="section">
-                <h2 class="section-title">5.1 绘制固定区域的子图</h2>
-                
-                <h3>5.1.2 实例1：某工厂产品A与产品B去年的销售额分析</h3>
-                <div class="chart-container" id="chart5-1-2">
-                    <div style="display: flex; align-items: center; justify-content: center; height: 100%;">
-                        <div class="loading"></div>
-                        <span style="margin-left: 1rem;">加载图表数据...</span>
-                    </div>
-                </div>
-                
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>月份</th><th>产品A销售额(亿元)</th><th>产品B销售额(亿元)</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr><td>1月</td><td>20</td><td>17</td></tr>
-                        <tr><td>2月</td><td>28</td><td>22</td></tr>
-                        <tr><td>3月</td><td>23</td><td>39</td></tr>
-                        <tr><td>4月</td><td>16</td><td>26</td></tr>
-                        <tr><td>5月</td><td>29</td><td>35</td></tr>
-                        <tr><td>6月</td><td>36</td><td>23</td></tr>
-                        <tr><td>7月</td><td>39</td><td>25</td></tr>
-                        <tr><td>8月</td><td>33</td><td>27</td></tr>
-                        <tr><td>9月</td><td>31</td><td>29</td></tr>
-                        <tr><td>10月</td><td>19</td><td>38</td></tr>
-                        <tr><td>11月</td><td>21</td><td>28</td></tr>
-                        <tr><td>12月</td><td>25</td><td>20</td></tr>
-                    </tbody>
-                </table>
-
-                <h3>5.1.4 实例2：部分国家养猫与养狗人群比例分析</h3>
-                <div class="chart-container" id="chart5-1-4">
-                    <div style="display: flex; align-items: center; justify-content: center; height: 100%;">
-                        <div class="loading"></div>
-                        <span style="margin-left: 1rem;">加载图表数据...</span>
-                    </div>
-                </div>
-                
-                <button class="btn" onclick="toggleChartOrientation()">
-                    <span>🔄</span>切换图表方向
-                </button>
-                <button class="btn btn-secondary" onclick="exportChartData('5.1')">
-                    <span>📥</span>导出数据
-                </button>
-            </section>
-
-            <!-- 5.2 绘制自定义区域的子图 -->
-            <section id="section5-2" class="section">
-                <h2 class="section-title">5.2 绘制自定义区域的子图</h2>
-                
-                <h3>5.2.2 实例3：2017年与2018年抖音用户分析</h3>
-                <div class="chart-container" id="chart5-2-2">
-                    <div style="display: flex; align-items: center; justify-content: center; height: 100%;">
-                        <div class="loading"></div>
-                        <span style="margin-left: 1rem;">加载图表数据...</span>
-                    </div>
-                </div>
-                
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>地区</th><th>2017年用户比例(%)</th><th>2018年用户比例(%)</th><th>增长倍数</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr><td>一线城市</td><td>21</td><td>13</td><td>51</td></tr>
-                        <tr><td>二线城市</td><td>35</td><td>32</td><td>73</td></tr>
-                        <tr><td>三线城市</td><td>22</td><td>27</td><td>99</td></tr>
-                        <tr><td>四线及以外</td><td>19</td><td>27</td><td>132</td></tr>
-                        <tr><td>其他国家及地区</td><td>3</td><td>1</td><td>45</td></tr>
-                    </tbody>
-                </table>
-            </section>
-
-            <!-- 5.3 共享子图的坐标轴 -->
-            <section id="section5-3" class="section">
-                <h2 class="section-title">5.3 共享子图的坐标轴</h2>
-                
-                <h3>5.3.3 实例4：某地区全年平均气温与降水量、蒸发量的关系</h3>
-                <div class="chart-container" id="chart5-3-3">
-                    <div style="display: flex; align-items: center; justify-content: center; height: 100%;">
-                        <div class="loading"></div>
-                        <span style="margin-left: 1rem;">加载图表数据...</span>
-                    </div>
-                </div>
-                
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>月份</th><th>平均气温(°C)</th><th>降水量(ml)</th><th>蒸发量(ml)</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr><td>1月</td><td>2.0</td><td>2.6</td><td>2.0</td></tr>
-                        <tr><td>2月</td><td>2.2</td><td>5.9</td><td>4.9</td></tr>
-                        <tr><td>3月</td><td>3.3</td><td>9.0</td><td>7.0</td></tr>
-                        <tr><td>4月</td><td>4.5</td><td>26.4</td><td>23.2</td></tr>
-                        <tr><td>5月</td><td>6.3</td><td>28.7</td><td>25.6</td></tr>
-                        <tr><td>6月</td><td>10.2</td><td>70.7</td><td>76.7</td></tr>
-                        <tr><td>7月</td><td>20.3</td><td>175.6</td><td>135.6</td></tr>
-                        <tr><td>8月</td><td>33.4</td><td>182.2</td><td>162.2</td></tr>
-                        <tr><td>9月</td><td>23.0</td><td>48.7</td><td>32.6</td></tr>
-                        <tr><td>10月</td><td>16.5</td><td>18.8</td><td>20.0</td></tr>
-                        <tr><td>11月</td><td>12.0</td><td>6.0</td><td>6.4</td></tr>
-                        <tr><td>12月</td><td>6.2</td><td>2.3</td><td>3.3</td></tr>
-                    </tbody>
-                </table>
-            </section>
-
-            <!-- 5.4 子图的布局 -->
-            <section id="section5-4" class="section">
-                <h2 class="section-title">5.4 子图的布局</h2>
-                
-                <h3>5.4.4 实例5：2018年上半年某品牌汽车销售情况</h3>
-                <div class="chart-container" id="chart5-4-4">
-                    <div style="display: flex; align-items: center; justify-content: center; height: 100%;">
-                        <div class="loading"></div>
-                        <span style="margin-left: 1rem;">加载图表数据...</span>
-                    </div>
-                </div>
-                
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>月份</th><th>销售额(亿元)</th><th>城市</th><th>销量(辆)</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr><td>1月</td><td>2150</td><td>北京</td><td>83775</td></tr>
-                        <tr><td>2月</td><td>1050</td><td>上海</td><td>62860</td></tr>
-                        <tr><td>3月</td><td>1560</td><td>广州</td><td>59176</td></tr>
-                        <tr><td>4月</td><td>1480</td><td>深圳</td><td>64205</td></tr>
-                        <tr><td>5月</td><td>1530</td><td>浙江</td><td>48671</td></tr>
-                        <tr><td>6月</td><td>1490</td><td>山东</td><td>39968</td></tr>
-                    </tbody>
-                </table>
-            </section>
-
-            <!-- 性能监控 -->
-            <section class="section">
-                <h2 class="section-title">🔧 平台性能监控</h2>
-                <div id="performance-metrics">
-                    <p>加载时间: <span id="load-time">计算中...</span></p>
-                    <p>图表数量: <span id="chart-count">5</span> 个</p>
-                    <p>数据点总数: <span id="data-points">56</span> 个</p>
-                    <p>安全状态: <span class="success">✅ 已启用HTTPS加密</span></p>
-                </div>
-            </section>
+        
+        <div class="nav">
+            <button class="nav-btn active" onclick="showSection('section1')">产品销售额分析</button>
+            <button class="nav-btn" onclick="showSection('section2')">养猫养狗人群比例</button>
+            <button class="nav-btn" onclick="showSection('section3')">抖音用户分析</button>
+            <button class="nav-btn" onclick="showSection('section4')">气温与水量关系</button>
+            <button class="nav-btn" onclick="showSection('section5')">汽车销售情况</button>
         </div>
-    </main>
-
-    <footer class="footer">
-        <div class="container">
-            <p>第五章数据可视化平台 - 基于精确教学数据开发</p>
-            <p>学号：<strong>022340614</strong> | 仓库：<strong>022340614/022340614</strong> | 安全稳定版本</p>
-            <p style="font-size: 0.875rem; opacity: 0.7; margin-top: 1rem;">
-                包含5.1固定区域子图、5.2自定义区域子图、5.3共享坐标轴、5.4子图布局 | 永久公网访问
-            </p>
+        
+        <div class="content">
+            <!-- 产品销售额分析 -->
+            <div id="section1" class="chart-section">
+                <div class="chart-container">
+                    <div class="chart-title">产品A与产品B的销售额分析</div>
+                    <div class="chart-description">
+                        展示某工厂产品A与产品B去年各月的销售额对比，包含线图、饼图等多种可视化形式
+                    </div>
+                    <div id="product-sales-chart" class="chart"></div>
+                </div>
+            </div>
+            
+            <!-- 养猫养狗人群比例 -->
+            <div id="section2" class="chart-section" style="display: none;">
+                <div class="chart-container">
+                    <div class="chart-title">部分国家养猫与养狗人群比例分析</div>
+                    <div class="chart-description">
+                        比较12个国家养猫和养狗人群的比例分布，使用水平条形图进行对比展示
+                    </div>
+                    <div class="subplot-grid">
+                        <div class="subplot-item">
+                            <div id="cat-people-chart" style="height: 300px;"></div>
+                        </div>
+                        <div class="subplot-item">
+                            <div id="dog-people-chart" style="height: 300px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 抖音用户分析 -->
+            <div id="section3" class="chart-section" style="display: none;">
+                <div class="chart-container">
+                    <div class="chart-title">2017年与2018年抖音用户分析</div>
+                    <div class="chart-description">
+                        展示抖音用户在不同城市级别的分布变化及增长倍数分析
+                    </div>
+                    <div id="douyin-analysis-chart" class="chart"></div>
+                </div>
+            </div>
+            
+            <!-- 气温与水量关系 -->
+            <div id="section4" class="chart-section" style="display: none;">
+                <div class="chart-container">
+                    <div class="chart-title">平均气温与降水量、蒸发量的关系</div>
+                    <div class="chart-description">
+                        展示某地区全年平均气温与降水量、蒸发量的关系，使用双Y轴图表
+                    </div>
+                    <div id="temperature-water-chart" class="chart"></div>
+                </div>
+            </div>
+            
+            <!-- 汽车销售情况 -->
+            <div id="section5" class="chart-section" style="display: none;">
+                <div class="chart-container">
+                    <div class="chart-title">2018年上半年某品牌汽车销售情况</div>
+                    <div class="chart-description">
+                        展示汽车销售额、分公司销量及堆叠面积图的多子图布局
+                    </div>
+                    <div id="car-sales-chart" class="chart"></div>
+                </div>
+            </div>
         </div>
-    </footer>
+        
+        <div class="footer">
+            <p>基于第五章内容构建的数据可视化平台 | 子图布局与坐标轴共享技术</p>
+        </div>
+    </div>
 
-    <!-- Plotly.js CDN -->
-    <script src="https://cdn.plot.ly/plotly-2.16.1.min.js"></script>
-    
     <script>
-        // 第五章精确数据
-        const chapter5ExactData = {
-            // 5.1.2 产品销售额数据
-            productSales: {
-                months: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
-                productA: [20, 28, 23, 16, 29, 36, 39, 33, 31, 19, 21, 25],
-                productB: [17, 22, 39, 26, 35, 23, 25, 27, 29, 38, 28, 20]
-            },
-            // 5.1.4 人群比例数据
-            population: {
-                countries: ['中国', '加拿大', '巴西', '澳大利亚', '日本', '墨西哥', '俄罗斯', '韩国', '瑞士', '土耳其', '英国', '美国'],
-                catOwners: [19, 33, 28, 29, 14, 24, 57, 6, 26, 15, 27, 39],
-                dogOwners: [25, 33, 58, 39, 15, 64, 29, 23, 22, 11, 27, 50]
-            },
-            // 5.2.2 抖音用户数据
-            douyin: {
-                cities: ['一线城市', '二线城市', '三线城市', '四线及以外', '其他国家及地区'],
-                data2017: [21, 35, 22, 19, 3],
-                data2018: [13, 32, 27, 27, 1],
-                growth: [51, 73, 99, 132, 45]
-            },
-            // 5.3.3 气温与水量数据
-            temperature: {
-                months: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
-                temperature: [2.0, 2.2, 3.3, 4.5, 6.3, 10.2, 20.3, 33.4, 23.0, 16.5, 12.0, 6.2],
-                precipitation: [2.6, 5.9, 9.0, 26.4, 28.7, 70.7, 175.6, 182.2, 48.7, 18.8, 6.0, 2.3],
-                evaporation: [2.0, 4.9, 7.0, 23.2, 25.6, 76.7, 135.6, 162.2, 32.6, 20.0, 6.4, 3.3]
-            },
-            // 5.4.4 汽车销售数据
-            carSales: {
-                months: ['1月', '2月', '3月', '4月', '5月', '6月'],
-                sales: [2150, 1050, 1560, 1480, 1530, 1490],
-                cities: ['北京', '上海', '广州', '深圳', '浙江', '山东'],
-                salesCount: [83775, 62860, 59176, 64205, 48671, 39968]
-            }
+        // 导航切换功能
+        function showSection(sectionId) {
+            // 隐藏所有部分
+            document.querySelectorAll('.chart-section').forEach(section => {
+                section.style.display = 'none';
+            });
+            // 显示选中的部分
+            document.getElementById(sectionId).style.display = 'block';
+            
+            // 更新按钮状态
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+        
+        // 产品销售额分析图表
+        const productSalesData = {
+            months: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
+            productA: [20, 28, 23, 16, 29, 36, 39, 33, 31, 19, 21, 25],
+            productB: [17, 22, 39, 26, 35, 23, 25, 27, 29, 38, 28, 20]
         };
-
-        let currentOrientation = 'horizontal';
-        let performanceStartTime = Date.now();
-
-        // 初始化所有图表
-        function initCharts() {
-            try {
-                // 5.1.2 产品销售额图表
-                Plotly.newPlot('chart5-1-2', [
-                    {
-                        x: chapter5ExactData.productSales.months,
-                        y: chapter5ExactData.productSales.productA,
-                        type: 'scatter',
-                        mode: 'lines+markers',
-                        name: '产品A',
-                        line: {color: '#FF6B6B', width: 3},
-                        marker: {size: 6}
-                    },
-                    {
-                        x: chapter5ExactData.productSales.months,
-                        y: chapter5ExactData.productSales.productB,
-                        type: 'scatter',
-                        mode: 'lines+markers',
-                        name: '产品B',
-                        line: {color: '#4ECDC4', width: 3},
-                        marker: {size: 6}
-                    }
-                ], {
-                    title: '5.1.2 产品A与产品B销售额分析 - 022340614',
-                    xaxis: {title: '月份'},
-                    yaxis: {title: '销售额(亿元)'},
-                    showlegend: true,
-                    legend: {x: 0, y: 1}
-                });
-
-                // 5.1.4 人群比例图表
-                updatePopulationChart();
-
-                // 5.2.2 抖音用户分析图表
-                Plotly.newPlot('chart5-2-2', [
-                    {
-                        x: chapter5ExactData.douyin.cities,
-                        y: chapter5ExactData.douyin.data2017,
-                        type: 'bar',
-                        name: '2017年',
-                        marker: {color: '#667eea'}
-                    },
-                    {
-                        x: chapter5ExactData.douyin.cities,
-                        y: chapter5ExactData.douyin.data2018,
-                        type: 'bar',
-                        name: '2018年',
-                        marker: {color: '#764ba2'}
-                    },
-                    {
-                        x: chapter5ExactData.douyin.cities,
-                        y: chapter5ExactData.douyin.growth,
-                        type: 'scatter',
-                        mode: 'lines+markers',
-                        name: '增长倍数',
-                        yaxis: 'y2',
-                        line: {color: '#FF6B6B', width: 3},
-                        marker: {size: 6}
-                    }
-                ], {
-                    title: '5.2.2 2017年与2018年抖音用户分析 - 022340614',
-                    xaxis: {title: '地区'},
-                    yaxis: {title: '用户比例(%)'},
-                    yaxis2: {
-                        title: '增长倍数',
-                        side: 'right',
-                        overlaying: 'y'
-                    },
-                    showlegend: true
-                });
-
-                // 5.3.3 气温与水量关系图表
-                Plotly.newPlot('chart5-3-3', [
-                    {
-                        x: chapter5ExactData.temperature.months,
-                        y: chapter5ExactData.temperature.temperature,
-                        type: 'scatter',
-                        mode: 'lines',
-                        name: '平均气温(°C)',
-                        yaxis: 'y1',
-                        line: {color: '#FF6B6B', width: 3}
-                    },
-                    {
-                        x: chapter5ExactData.temperature.months,
-                        y: chapter5ExactData.temperature.precipitation,
-                        type: 'bar',
-                        name: '降水量(ml)',
-                        yaxis: 'y2',
-                        marker: {color: '#4ECDC4', opacity: 0.7}
-                    },
-                    {
-                        x: chapter5ExactData.temperature.months,
-                        y: chapter5ExactData.temperature.evaporation,
-                        type: 'bar',
-                        name: '蒸发量(ml)',
-                        yaxis: 'y2',
-                        marker: {color: '#FFA500', opacity: 0.7}
-                    }
-                ], {
-                    title: '5.3.3 平均气温与降水量、蒸发量的关系 - 022340614',
-                    xaxis: {title: '月份'},
-                    yaxis: {title: '气温(°C)', side: 'left'},
-                    yaxis2: {
-                        title: '水量(ml)',
-                        side: 'right',
-                        overlaying: 'y'
-                    },
-                    showlegend: true
-                });
-
-                // 5.4.4 汽车销售分析图表
-                Plotly.newPlot('chart5-4-4', [
-                    {
-                        x: chapter5ExactData.carSales.months,
-                        y: chapter5ExactData.carSales.sales,
-                        type: 'bar',
-                        name: '月销售额(亿元)',
-                        marker: {color: '#3299CC'}
-                    },
-                    {
-                        x: chapter5ExactData.carSales.cities,
-                        y: chapter5ExactData.carSales.salesCount,
-                        type: 'scatter',
-                        mode: 'lines+markers',
-                        name: '城市销量(辆)',
-                        yaxis: 'y2',
-                        line: {color: '#FF6B6B', width: 3},
-                        marker: {size: 6}
-                    }
-                ], {
-                    title: '5.4.4 2018年上半年某品牌汽车销售情况 - 022340614',
-                    xaxis: {title: '月份/城市'},
-                    yaxis: {title: '销售额(亿元)', side: 'left'},
-                    yaxis2: {
-                        title: '销量(辆)',
-                        side: 'right',
-                        overlaying: 'y'
-                    },
-                    showlegend: true
-                });
-
-                updatePerformanceMetrics();
-                
-            } catch (error) {
-                console.error('图表初始化错误:', error);
-                document.getElementById('status-message').className = 'error';
-                document.getElementById('status-message').innerHTML = '❌ 图表加载失败: ' + error.message;
-            }
-        }
-
-        // 更新人群比例图表
-        function updatePopulationChart() {
-            Plotly.newPlot('chart5-1-4', [
-                {
-                    y: chapter5ExactData.population.countries,
-                    x: chapter5ExactData.population.catOwners,
-                    type: 'bar',
-                    name: '养猫人群',
-                    orientation: currentOrientation,
-                    marker: {color: '#FFA500'}
-                },
-                {
-                    y: chapter5ExactData.population.countries,
-                    x: chapter5ExactData.population.dogOwners,
-                    type: 'bar',
-                    name: '养狗人群',
-                    orientation: currentOrientation,
-                    marker: {color: '#20B2AA'}
-                }
-            ], {
-                title: `5.1.4 部分国家养猫与养狗人群比例分析 - 022340614`,
-                xaxis: {title: currentOrientation === 'horizontal' ? '人群比例(%)' : '国家'},
-                yaxis: {title: currentOrientation === 'horizontal' ? '国家' : '人群比例(%)'}
-            });
-        }
-
-        // 切换图表方向
-        function toggleChartOrientation() {
-            currentOrientation = currentOrientation === 'horizontal' ? 'vertical' : 'horizontal';
-            updatePopulationChart();
-        }
-
-        // 导出数据
-        function exportChartData(section) {
-            const data = chapter5ExactData;
-            let csvContent = "data:text/csv;charset=utf-8,";
-            
-            switch(section) {
-                case '5.1':
-                    csvContent += "月份,产品A销售额,产品B销售额\n";
-                    data.productSales.months.forEach((month, i) => {
-                        csvContent += `${month},${data.productSales.productA[i]},${data.productSales.productB[i]}\n`;
-                    });
-                    break;
-                case '5.2':
-                    csvContent += "地区,2017年用户比例,2018年用户比例,增长倍数\n";
-                    data.douyin.cities.forEach((city, i) => {
-                        csvContent += `${city},${data.douyin.data2017[i]},${data.douyin.data2018[i]},${data.douyin.growth[i]}\n`;
-                    });
-                    break;
-            }
-            
-            const encodedUri = encodeURI(csvContent);
-            const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", `第五章数据_${section}_022340614.csv`);
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-
-        // 更新性能指标
-        function updatePerformanceMetrics() {
-            const loadTime = Date.now() - performanceStartTime;
-            document.getElementById('load-time').textContent = `${loadTime}ms`;
-            
-            // 计算数据点总数
-            const totalDataPoints = 
-                chapter5ExactData.productSales.productA.length * 2 +
-                chapter5ExactData.population.catOwners.length * 2 +
-                chapter5ExactData.douyin.data2017.length * 3 +
-                chapter5ExactData.temperature.temperature.length * 3 +
-                chapter5ExactData.carSales.sales.length * 2;
-                
-            document.getElementById('data-points').textContent = totalDataPoints;
-        }
-
-        // 页面加载初始化
+        
+        // 养猫养狗人群数据
+        const petData = {
+            countries: ['中国', '加拿大', '巴西', '澳大利亚', '日本', '墨西哥', '俄罗斯', '韩国', '瑞士', '土耳其', '英国', '美国'],
+            catPeople: [19, 33, 28, 29, 14, 24, 57, 6, 26, 15, 27, 39],
+            dogPeople: [25, 33, 58, 39, 15, 64, 29, 23, 22, 11, 27, 50]
+        };
+        
+        // 抖音用户分析数据
+        const douyinData = {
+            cities: ['一线城市', '二线城市', '三线城市', '四线及以外', '其他国家及地区'],
+            data2017: [21, 35, 22, 19, 3],
+            data2018: [13, 32, 27, 27, 1],
+            growth: [51, 73, 99, 132, 45]
+        };
+        
+        // 气温与水量数据
+        const weatherData = {
+            months: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
+            temperature: [2.0, 2.2, 3.3, 4.5, 6.3, 10.2, 20.3, 33.4, 23.0, 16.5, 12.0, 6.2],
+            precipitation: [2.6, 5.9, 9.0, 26.4, 28.7, 70.7, 175.6, 182.2, 48.7, 18.8, 6.0, 2.3],
+            evaporation: [2.0, 4.9, 7.0, 23.2, 25.6, 76.7, 135.6, 162.2, 32.6, 20.0, 6.4, 3.3]
+        };
+        
+        // 汽车销售数据
+        const carData = {
+            months: ['1月', '2月', '3月', '4月', '5月', '6月'],
+            sales: [2150, 1050, 1560, 1480, 1530, 1490],
+            cities: ['北京', '上海', '广州', '深圳', '浙江', '山东'],
+            saleCount: [83775, 62860, 59176, 64205, 48671, 39968]
+        };
+        
+        // 初始化图表
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('第五章数据可视化平台加载 - 022340614');
+            renderProductSalesChart();
+            renderPetCharts();
+            renderDouyinChart();
+            renderTemperatureWaterChart();
+            renderCarSalesChart();
+        });
+        
+        function renderProductSalesChart() {
+            const trace1 = {
+                x: productSalesData.months,
+                y: productSalesData.productA,
+                type: 'scatter',
+                mode: 'lines+markers',
+                name: '产品A',
+                line: { color: '#FF6B9D', width: 3 },
+                marker: { size: 8 }
+            };
             
-            // 检查HTTPS
-            if (location.protocol !== 'https:') {
-                document.getElementById('status-message').className = 'error';
-                document.getElementById('status-message').innerHTML = '⚠️ 建议使用HTTPS访问以确保安全';
-            }
+            const trace2 = {
+                x: productSalesData.months,
+                y: productSalesData.productB,
+                type: 'scatter',
+                mode: 'lines+markers',
+                name: '产品B',
+                line: { color: '#4ECDC4', width: 3 },
+                marker: { size: 8 }
+            };
             
-            // 初始化图表
-            if (typeof Plotly !== 'undefined') {
-                initCharts();
-            } else {
-                document.getElementById('status-message').className = 'error';
-                document.getElementById('status-message').innerHTML = '❌ Plotly.js加载失败，请检查网络连接';
-            }
+            const trace3 = {
+                type: 'pie',
+                values: productSalesData.productA,
+                labels: productSalesData.months,
+                name: '产品A销售额分布',
+                domain: { row: 0, column: 0 },
+                hole: 0.4
+            };
             
-            // 性能监控
-            window.addEventListener('load', () => {
-                const loadTime = performance.timing.loadEventEnd - performance.timing.navigationStart;
-                console.log('页面完整加载时间: ' + loadTime + 'ms');
+            const trace4 = {
+                type: 'pie',
+                values: productSalesData.productB,
+                labels: productSalesData.months,
+                name: '产品B销售额分布',
+                domain: { row: 0, column: 1 },
+                hole: 0.4
+            };
+            
+            const layout = {
+                title: '产品A与产品B销售额分析',
+                grid: { rows: 2, columns: 2, pattern: 'independent' },
+                height: 400
+            };
+            
+            Plotly.newPlot('product-sales-chart', [trace1, trace2, trace3, trace4], layout);
+        }
+        
+        function renderPetCharts() {
+            // 养猫人群图表
+            Plotly.newPlot('cat-people-chart', [{
+                type: 'bar',
+                y: petData.countries,
+                x: petData.catPeople,
+                orientation: 'h',
+                marker: { color: '#FFA500' }
+            }], {
+                title: '部分国家养猫人群的比例',
+                xaxis: { title: '人群比例(%)' }
             });
-        });
-
-        // 错误处理
-        window.addEventListener('error', function(e) {
-            console.error('全局错误:', e.error);
-        });
+            
+            // 养狗人群图表
+            Plotly.newPlot('dog-people-chart', [{
+                type: 'bar',
+                y: petData.countries,
+                x: petData.dogPeople,
+                orientation: 'h',
+                marker: { color: '#20B2AA' }
+            }], {
+                title: '部分国家养狗人群的比例',
+                xaxis: { title: '人群比例(%)' }
+            });
+        }
+        
+        function renderDouyinChart() {
+            const trace1 = {
+                x: douyinData.cities,
+                y: douyinData.growth,
+                type: 'bar',
+                name: '增长倍数',
+                marker: { color: '#20B2AA' }
+            };
+            
+            const trace2 = {
+                type: 'pie',
+                values: douyinData.data2017,
+                labels: douyinData.cities,
+                name: '2017年分布',
+                domain: { x: [0, 0.45], y: [0.55, 1] }
+            };
+            
+            const trace3 = {
+                type: 'pie',
+                values: douyinData.data2018,
+                labels: douyinData.cities,
+                name: '2018年分布',
+                domain: { x: [0.55, 1], y: [0.55, 1] }
+            };
+            
+            const layout = {
+                title: '抖音用户地区分布与增长分析',
+                grid: { rows: 2, columns: 2, pattern: 'independent' },
+                annotations: [
+                    {
+                        x: 0.225, y: 0.75,
+                        xref: 'paper', yref: 'paper',
+                        text: '2017年分布',
+                        showarrow: false
+                    },
+                    {
+                        x: 0.775, y: 0.75,
+                        xref: 'paper', yref: 'paper',
+                        text: '2018年分布',
+                        showarrow: false
+                    }
+                ]
+            };
+            
+            Plotly.newPlot('douyin-analysis-chart', [trace1, trace2, trace3], layout);
+        }
+        
+        function renderTemperatureWaterChart() {
+            const trace1 = {
+                x: weatherData.months,
+                y: weatherData.evaporation,
+                type: 'bar',
+                name: '蒸发量',
+                marker: { color: 'orange' }
+            };
+            
+            const trace2 = {
+                x: weatherData.months,
+                y: weatherData.precipitation,
+                type: 'bar',
+                name: '降水量',
+                marker: { color: 'green' }
+            };
+            
+            const trace3 = {
+                x: weatherData.months,
+                y: weatherData.temperature,
+                type: 'scatter',
+                mode: 'lines+markers',
+                name: '平均气温',
+                yaxis: 'y2',
+                line: { color: 'purple', width: 3 },
+                marker: { size: 8 }
+            };
+            
+            const layout = {
+                title: '平均气温与降水量、蒸发量的关系',
+                barmode: 'stack',
+                yaxis: { title: '水量 (ml)' },
+                yaxis2: {
+                    title: '气温(°C)',
+                    overlaying: 'y',
+                    side: 'right'
+                }
+            };
+            
+            Plotly.newPlot('temperature-water-chart', [trace1, trace2, trace3], layout);
+        }
+        
+        function renderCarSalesChart() {
+            const trace1 = {
+                x: carData.months,
+                y: carData.sales,
+                type: 'bar',
+                name: '销售额',
+                marker: { color: '#3299CC' },
+                domain: { x: [0, 1], y: [0.66, 1] }
+            };
+            
+            const trace2 = {
+                x: carData.cities,
+                y: carData.saleCount,
+                type: 'scatter',
+                mode: 'lines+markers',
+                name: '销量趋势',
+                line: { color: 'magenta', dash: 'dash', width: 3 },
+                marker: { size: 8 },
+                domain: { x: [0, 0.48], y: [0, 0.48] }
+            };
+            
+            const trace3 = {
+                x: carData.cities,
+                y: carData.saleCount,
+                type: 'scatter',
+                mode: 'lines',
+                fill: 'tozeroy',
+                name: '销量面积',
+                line: { color: '#9999FF' },
+                domain: { x: [0.52, 1], y: [0, 0.48] }
+            };
+            
+            const layout = {
+                title: '2018年上半年汽车销售情况',
+                grid: { rows: 2, columns: 2, pattern: 'independent' },
+                showlegend: true
+            };
+            
+            Plotly.newPlot('car-sales-chart', [trace1, trace2, trace3], layout);
+        }
     </script>
 </body>
 </html>

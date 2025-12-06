@@ -1,2 +1,1 @@
-# 禁用 Jekyll 处理
-# 确保 GitHub Pages 正确加载静态文件
+# This file ensures GitHub Pages doesn't use Jekyll processing
